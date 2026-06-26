@@ -6,7 +6,7 @@ const app = express();
 
 app.use(express.json());
 app.use("/comments", require("../routes/comment.routes"));
-// app.use("/users", require("../routes/user.routes"));
+app.use("/users", require("../routes/user.routes"));
 // app.use("/posts", require("../routes/post.routes"));
 // app.use("/tags", require("../routes/tag.routes"));
 app.use(errorHandler);
