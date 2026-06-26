@@ -2,11 +2,16 @@ const mongoose = require('mongoose');
 
 const tagSchema = new mongoose.Schema(
     {
-        name: {
+        nombre: {
             type: String,
-            required: [true, "El nombre de la etiqueta es obligatorio"],
             trim: true,
+            required: [true, "El nombre de la etiqueta es obligatorio"],
             unique: true,
+            min: [2,"el tag debe tener al menos 1 caracter"],
+            match: [
+                /^#\S+$/,
+                "el tag debe comenzar con # y no puede haber espacio entre palabras"
+            ]
         },
     },
     { timestamps: true }
