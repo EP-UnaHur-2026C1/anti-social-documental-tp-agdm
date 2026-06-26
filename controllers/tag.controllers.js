@@ -14,10 +14,11 @@ const obtenerTags = async (req,res) => {
 
 const obtenerTagsDePost = async (req,res) => {
     try{
-        const post = req.post;
-        const tags = await Post.tags
-        .select("-createdAt -updatedAt -__v");
-        res.status(200).json(tags);
+        const post = await req.post.populate({
+            path: "tags",
+            select: "-createdAt -updatedAt -__v -_id"
+        })
+        res.status(200).json(post.tags);
     }catch (error){
         res.status(500).json({ error: 'Error al obtener los tags.' })
         console.log(error.message)
@@ -27,7 +28,6 @@ const obtenerTagsDePost = async (req,res) => {
 const obtenerTag = async (req,res) => {
     try{
         const tag = req.tag
-        .select("-createdAt -updatedAt -__v");
         res.status(200).json(tag)
     }catch (error){
         res.status(500).json({ error: 'Error al obtener el tag.' })
@@ -38,7 +38,7 @@ const obtenerTag = async (req,res) => {
 const crearTag = async (req,res) => {
     try{
         const tag = await Tag.create(req.body)
-        res.status(200).json(tag)
+        res.status(201).json(tag)
     }catch (error){
         res.status(500).json({ error: 'Error al crear tag.' })
         console.log(error.message)
