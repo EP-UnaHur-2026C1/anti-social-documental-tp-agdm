@@ -7,11 +7,11 @@ const {
   eliminarComentario,
 } = require("../controllers/comment.controller");
 const { verificarPostExistente } = require("../middlewares/post.middleware");
-const { verificarUsuarioExistente } = require("../middlewares/user.middleware");
+const { verificarUsuarioExistente, verificarUsuarioPorId } = require("../middlewares/user.middleware");
 const { verificarComentarioExistente } = require("../middlewares/comment.middleware");
 
 router.get("/post/:postId", verificarPostExistente, obtenerComentariosPorPost);
-router.post("/", verificarPostExistente, verificarUsuarioExistente, crearComentario);
+router.post("/", verificarPostExistente, verificarUsuarioPorId, crearComentario);
 router.put("/:id", verificarComentarioExistente, actualizarComentario);
 router.delete("/:id", verificarComentarioExistente, eliminarComentario);
 

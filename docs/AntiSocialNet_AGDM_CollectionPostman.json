@@ -1,0 +1,395 @@
+{
+  "info": {
+    "name": "UnaHur Anti-Social Net - AGDM",
+    "description": "Colección de pruebas para la API de UnaHur Anti-Social Net. Incluye las 4 entidades: Users, Posts, Comments y Tags.\n\nVariables:\n- base_url: URL base de la API (por defecto http://localhost:3000)\n- userId, postId, commentId, tagId, imageId: IDs para reutilizar entre requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "nickName", "value": "andres123" },
+    { "key": "nickNameSeguido", "value": "juan456" },
+    { "key": "userId", "value": "" },
+    { "key": "postId", "value": "" },
+    { "key": "commentId", "value": "" },
+    { "key": "tagId", "value": "" },
+    { "key": "imageId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Obtener todos los usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Crear usuario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nickName\": \"andres123\",\n  \"email\": \"andres@mail.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Obtener usuario por nickName",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{nickName}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{nickName}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuevo@mail.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{nickName}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{nickName}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{nickName}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{nickName}}"]
+            }
+          }
+        },
+        {
+          "name": "Seguir usuario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seguir\": \"{{nickNameSeguido}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{nickName}}/follow",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{nickName}}", "follow"]
+            }
+          }
+        },
+        {
+          "name": "Dejar de seguir usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seguir\": \"{{nickNameSeguido}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{nickName}}/unfollow",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{nickName}}", "unfollow"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Obtener todos los posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts",
+              "host": ["{{base_url}}"],
+              "path": ["posts"]
+            }
+          }
+        },
+        {
+          "name": "Obtener post por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{postId}}",
+              "host": ["{{base_url}}"],
+              "path": ["posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear post",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Mi primer post\",\n  \"user\": \"{{userId}}\",\n  \"images\": [],\n  \"tags\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/posts",
+              "host": ["{{base_url}}"],
+              "path": ["posts"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar post",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Descripción actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/posts/{{postId}}",
+              "host": ["{{base_url}}"],
+              "path": ["posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{postId}}",
+              "host": ["{{base_url}}"],
+              "path": ["posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Agregar imagen a post",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://ejemplo.com/imagen.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/posts/{{postId}}/images",
+              "host": ["{{base_url}}"],
+              "path": ["posts", "{{postId}}", "images"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar imagen de post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{postId}}/images/{{imageId}}",
+              "host": ["{{base_url}}"],
+              "path": ["posts", "{{postId}}", "images", "{{imageId}}"]
+            }
+          }
+        },
+        {
+          "name": "Asociar tag a post",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{postId}}/tags/{{tagId}}",
+              "host": ["{{base_url}}"],
+              "path": ["posts", "{{postId}}", "tags", "{{tagId}}"]
+            }
+          }
+        },
+        {
+          "name": "Quitar tag de post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{postId}}/tags/{{tagId}}",
+              "host": ["{{base_url}}"],
+              "path": ["posts", "{{postId}}", "tags", "{{tagId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Obtener comentarios de un post",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/post/{{postId}}",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "post", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear comentario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Este es un comentario\",\n  \"user\": \"{{userId}}\",\n  \"post\": \"{{postId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/comments",
+              "host": ["{{base_url}}"],
+              "path": ["comments"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar comentario",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Comentario actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/comments/{{commentId}}",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "{{commentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar comentario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/{{commentId}}",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "{{commentId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tags",
+      "item": [
+        {
+          "name": "Obtener todos los tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags",
+              "host": ["{{base_url}}"],
+              "path": ["tags"]
+            }
+          }
+        },
+        {
+          "name": "Obtener tags de un post",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags/post/{{postId}}",
+              "host": ["{{base_url}}"],
+              "path": ["tags", "post", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener tag por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags/{{tagId}}",
+              "host": ["{{base_url}}"],
+              "path": ["tags", "{{tagId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear tag",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"#javascript\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tags",
+              "host": ["{{base_url}}"],
+              "path": ["tags"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar tag",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"#nodejs\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tags/{{tagId}}",
+              "host": ["{{base_url}}"],
+              "path": ["tags", "{{tagId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar tag",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags/{{tagId}}",
+              "host": ["{{base_url}}"],
+              "path": ["tags", "{{tagId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

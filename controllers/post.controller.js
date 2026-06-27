@@ -3,37 +3,14 @@ const mongoose = require("mongoose");
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
 const Tag = require("../models/tag.model");
-const Comment = require("../models/comment.model");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-const getCommentsLimitDate = () => {
-  const months = Number(process.env.COMMENTS_MAX_MONTHS || 6);
-
-  const date = new Date();
-  date.setMonth(date.getMonth() - months);
-
-  return date;
-};
-
 const getAllPosts = async (req, res) => {
   try {
-    const commentsLimitDate = getCommentsLimitDate();
-
     const posts = await Post.find()
       .populate("user", "nickName email")
-      .populate("tags", "name")
-      .populate({
-        path: "comments",
-        match: {
-          visible: true,
-          createdAt: { $gte: commentsLimitDate },
-        },
-        populate: {
-          path: "user",
-          select: "nickName email",
-        },
-      })
+      .populate("tags", "nombre")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -61,22 +38,9 @@ const getPostById = async (req, res) => {
       });
     }
 
-    const commentsLimitDate = getCommentsLimitDate();
-
     const post = await Post.findById(id)
       .populate("user", "nickName email")
-      .populate("tags", "name")
-      .populate({
-        path: "comments",
-        match: {
-          visible: true,
-          createdAt: { $gte: commentsLimitDate },
-        },
-        populate: {
-          path: "user",
-          select: "nickName email",
-        },
-      });
+      .populate("tags", "nombre");
 
     if (!post) {
       return res.status(404).json({
@@ -185,13 +149,11 @@ const createPost = async (req, res) => {
       user,
       images: normalizedImages,
       tags,
-      comments: [],
     });
 
     const populatedPost = await Post.findById(post._id)
       .populate("user", "nickName email")
-      .populate("tags", "name")
-      .populate("comments");
+      .populate("tags", "nombre");
 
     return res.status(201).json({
       ok: true,
@@ -235,8 +197,7 @@ const updatePost = async (req, res) => {
       },
     )
       .populate("user", "nickName email")
-      .populate("tags", "name")
-      .populate("comments");
+      .populate("tags", "nombre");
 
     if (!post) {
       return res.status(404).json({
@@ -423,8 +384,7 @@ const addTagToPost = async (req, res) => {
 
     const populatedPost = await Post.findById(id)
       .populate("user", "nickName email")
-      .populate("tags", "name")
-      .populate("comments");
+      .populate("tags", "nombre");
 
     return res.status(200).json({
       ok: true,
@@ -468,8 +428,7 @@ const removeTagFromPost = async (req, res) => {
 
     const populatedPost = await Post.findById(id)
       .populate("user", "nickName email")
-      .populate("tags", "name")
-      .populate("comments");
+      .populate("tags", "nombre");
 
     return res.status(200).json({
       ok: true,
@@ -485,70 +444,6 @@ const removeTagFromPost = async (req, res) => {
   }
 };
 
-const addCommentToPost = async (req, res) => {
-  try {
-    const { id, commentId } = req.params;
-
-    if (!isValidObjectId(id) || !isValidObjectId(commentId)) {
-      return res.status(400).json({
-        ok: false,
-        message: "ID de post o comentario inválido",
-      });
-    }
-
-    const post = await Post.findById(id);
-
-    if (!post) {
-      return res.status(404).json({
-        ok: false,
-        message: "Post no encontrado",
-      });
-    }
-
-    const comment = await Comment.findById(commentId);
-
-    if (!comment) {
-      return res.status(404).json({
-        ok: false,
-        message: "Comentario no encontrado",
-      });
-    }
-
-    if (comment.post.toString() !== id) {
-      return res.status(400).json({
-        ok: false,
-        message: "El comentario no pertenece a este post",
-      });
-    }
-
-    const alreadyExists = post.comments.some(
-      (currentCommentId) => currentCommentId.toString() === commentId,
-    );
-
-    if (!alreadyExists) {
-      post.comments.push(commentId);
-      await post.save();
-    }
-
-    const populatedPost = await Post.findById(id)
-      .populate("user", "nickName email")
-      .populate("tags", "name")
-      .populate("comments");
-
-    return res.status(200).json({
-      ok: true,
-      message: "Comentario asociado correctamente",
-      post: populatedPost,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      ok: false,
-      message: "Error al asociar comentario",
-      error: error.message,
-    });
-  }
-};
-
 module.exports = {
   getAllPosts,
   getPostById,
@@ -559,5 +454,4 @@ module.exports = {
   removeImageFromPost,
   addTagToPost,
   removeTagFromPost,
-  addCommentToPost,
 };

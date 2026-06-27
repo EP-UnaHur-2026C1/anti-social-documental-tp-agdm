@@ -9,8 +9,7 @@ const {
   addImageToPost,
   removeImageFromPost,
   addTagToPost,
-  removeTagFromPost,
-  addCommentToPost,
+  removeTagFromPost
 } = require("../controllers/post.controller");
 
 const router = express.Router();
@@ -26,7 +25,5 @@ router.delete("/:id/images/:imageId", removeImageFromPost);
 
 router.post("/:id/tags/:tagId", addTagToPost);
 router.delete("/:id/tags/:tagId", removeTagFromPost);
-
-router.post("/:id/comments/:commentId", addCommentToPost);
 
 module.exports = router;
