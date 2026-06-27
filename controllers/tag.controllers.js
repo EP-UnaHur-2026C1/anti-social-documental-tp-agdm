@@ -1,5 +1,6 @@
 const Tag = require('../models/tag.model');
 const Post = require('../models/post.model');
+const manejarErroresMongoose = require('../middlewares/errorAviso');
 
 const obtenerTags = async (req,res) => {
     try{
@@ -40,8 +41,7 @@ const crearTag = async (req,res) => {
         const tag = await Tag.create(req.body)
         res.status(201).json(tag)
     }catch (error){
-        res.status(500).json({ error: 'Error al crear tag.' })
-        console.log(error.message)
+        manejarErroresMongoose(error, res);
     }
 }
 
@@ -54,7 +54,7 @@ const actualizarTag = async (req,res) => {
         })
         res.status(200).json(tag)
     }catch (error){
-        res.status(500).json({ error: 'Error al actualizar tag.' })
+        manejarErroresMongoose(error, res);
         console.log(error.message)
     }
 }
