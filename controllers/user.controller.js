@@ -19,7 +19,7 @@ const obtenerUsuarios = async (req, res) => {
 
 const obtenerUsuario = async (req, res) => {
   try {
-    const usuarioCompleto = await User.findOne(req.user, 'nickName email')
+    const usuarioCompleto = await User.findById(req.usuario._id, 'nickName email')
       .populate('followers', 'nickName -_id')
       .populate('following', 'nickName -_id');
 
@@ -45,35 +45,34 @@ const crearUsuario = async (req, res) => {
 
 const actualizarUsuario = async (req, res) => {
   try {
-    
     if (req.body.nickName !== undefined) {
-      return res.status(403).json({ 
-        error: "No se puede modificar el nombre de usuario." 
-    });
-  }
-    const usuarioActualizado = await User.findByIdAndUpdate(req.user,req.body, 
-      { new: true, runValidators: true } 
+      return res.status(403).json({
+        error: "No se puede modificar el nombre de usuario."
+      });
+    }
+    const usuarioActualizado = await User.findByIdAndUpdate(
+      req.usuario._id,
+      req.body,
+      { new: true, runValidators: true }
     );
 
-
-    res.status(200).json({ 
-      nickName: usuarioActualizado.nickName, 
-      email: usuarioActualizado.email 
+    res.status(200).json({
+      nickName: usuarioActualizado.nickName,
+      email: usuarioActualizado.email
     });
   } catch (error) {
-      manejarErroresMongoose(error, res);
+    manejarErroresMongoose(error, res);
   }
 };
 
 const eliminarUsuario = async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.user);
+    await User.findByIdAndDelete(req.usuario._id);
     res.status(200).json({ message: `Usuario ${req.params.nickName} eliminado correctamente` });
   } catch (error) {
     res.status(500).json({ error: `Error al eliminar el usuario` });
   }
 };
-
 
 const seguirUsuario = async (req, res) => {
   try {

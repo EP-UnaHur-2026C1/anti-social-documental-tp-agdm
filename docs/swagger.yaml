@@ -1,0 +1,765 @@
+openapi: 3.0.0
+info:
+  title: UnaHur Anti-Social Net API
+  description: API REST para la red social UnaHur Anti-Social Net. Gestiona usuarios, publicaciones, comentarios y etiquetas.
+  version: 1.0.0
+  contact:
+    name: Grupo AGDM
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desarrollo
+
+tags:
+  - name: Users
+    description: Gestión de usuarios y relaciones de seguimiento
+  - name: Posts
+    description: Gestión de publicaciones, sus imágenes y etiquetas
+  - name: Comments
+    description: Gestión de comentarios sobre publicaciones
+  - name: Tags
+    description: Gestión de etiquetas
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6a3f27e73fce5e8a90adf123
+        nickName:
+          type: string
+          example: andres123
+        email:
+          type: string
+          example: andres@mail.com
+        followers:
+          type: array
+          items:
+            type: string
+        following:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserInput:
+      type: object
+      required:
+        - nickName
+        - email
+        - password
+      properties:
+        nickName:
+          type: string
+          example: andres123
+        email:
+          type: string
+          example: andres@mail.com
+        password:
+          type: string
+          example: "123456"
+
+    PostImage:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6a3f27e73fce5e8a90adf999
+        url:
+          type: string
+          example: https://ejemplo.com/imagen.jpg
+
+    Post:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6a30b88da16defa4881c7100
+        description:
+          type: string
+          example: Mi primer post
+        user:
+          $ref: '#/components/schemas/User'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostImage'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PostInput:
+      type: object
+      required:
+        - description
+        - user
+      properties:
+        description:
+          type: string
+          example: Mi primer post
+        user:
+          type: string
+          example: 6a3f27e73fce5e8a90adf123
+        images:
+          type: array
+          items:
+            type: string
+          example: []
+        tags:
+          type: array
+          items:
+            type: string
+          example: []
+
+    Comment:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6a30b8ce25ab9bdf77d1044f
+        text:
+          type: string
+          example: Este es un comentario
+        user:
+          type: string
+          example: 6a3f27e73fce5e8a90adf123
+        post:
+          type: string
+          example: 6a30b88da16defa4881c7100
+        visible:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CommentInput:
+      type: object
+      required:
+        - text
+        - user
+        - post
+      properties:
+        text:
+          type: string
+          example: Este es un comentario
+        user:
+          type: string
+          example: 6a3f27e73fce5e8a90adf123
+        post:
+          type: string
+          example: 6a30b88da16defa4881c7100
+
+    Tag:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6a30bc6925ab9bdf77d10453
+        nombre:
+          type: string
+          example: "#javascript"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TagInput:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          example: "#javascript"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Mensaje de error
+
+paths:
+  /users:
+    get:
+      tags: [Users]
+      summary: Obtener todos los usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags: [Users]
+      summary: Crear un usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nickName:
+                    type: string
+                  email:
+                    type: string
+        '400':
+          description: Datos inválidos o duplicados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{nickName}:
+    get:
+      tags: [Users]
+      summary: Obtener un usuario por nickName
+      parameters:
+        - name: nickName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags: [Users]
+      summary: Actualizar un usuario
+      parameters:
+        - name: nickName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: nuevo@mail.com
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Usuario actualizado
+        '403':
+          description: No se puede modificar el nickName
+        '404':
+          description: Usuario no encontrado
+    delete:
+      tags: [Users]
+      summary: Eliminar un usuario
+      parameters:
+        - name: nickName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario eliminado
+        '404':
+          description: Usuario no encontrado
+
+  /users/{seguidorNick}/follow:
+    post:
+      tags: [Users]
+      summary: Seguir a otro usuario
+      parameters:
+        - name: seguidorNick
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - seguir
+              properties:
+                seguir:
+                  type: string
+                  example: juan456
+      responses:
+        '200':
+          description: Ahora sigue al usuario
+        '400':
+          description: No puede seguirse a sí mismo
+        '404':
+          description: Uno o ambos usuarios no existen
+        '409':
+          description: Ya sigue a ese usuario
+
+  /users/{seguidorNick}/unfollow:
+    delete:
+      tags: [Users]
+      summary: Dejar de seguir a otro usuario
+      parameters:
+        - name: seguidorNick
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - seguir
+              properties:
+                seguir:
+                  type: string
+                  example: juan456
+      responses:
+        '200':
+          description: Dejó de seguir al usuario
+        '400':
+          description: No estaba siguiendo a ese usuario
+        '404':
+          description: Uno o ambos usuarios no existen
+
+  /posts:
+    get:
+      tags: [Posts]
+      summary: Obtener todos los posts
+      responses:
+        '200':
+          description: Lista de posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  total:
+                    type: integer
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+    post:
+      tags: [Posts]
+      summary: Crear un post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '201':
+          description: Post creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  message:
+                    type: string
+                  post:
+                    $ref: '#/components/schemas/Post'
+        '400':
+          description: Datos inválidos
+        '404':
+          description: Usuario o tag no encontrado
+
+  /posts/{id}:
+    get:
+      tags: [Posts]
+      summary: Obtener un post por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Post encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  post:
+                    $ref: '#/components/schemas/Post'
+        '404':
+          description: Post no encontrado
+    put:
+      tags: [Posts]
+      summary: Actualizar la descripción de un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - description
+              properties:
+                description:
+                  type: string
+                  example: Descripción actualizada
+      responses:
+        '200':
+          description: Post actualizado
+        '404':
+          description: Post no encontrado
+    delete:
+      tags: [Posts]
+      summary: Eliminar un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Post eliminado
+        '404':
+          description: Post no encontrado
+
+  /posts/{id}/images:
+    post:
+      tags: [Posts]
+      summary: Agregar una imagen a un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  example: https://ejemplo.com/imagen.jpg
+      responses:
+        '201':
+          description: Imagen agregada
+        '404':
+          description: Post no encontrado
+
+  /posts/{id}/images/{imageId}:
+    delete:
+      tags: [Posts]
+      summary: Eliminar una imagen de un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Imagen eliminada
+        '404':
+          description: Post o imagen no encontrada
+
+  /posts/{id}/tags/{tagId}:
+    post:
+      tags: [Posts]
+      summary: Asociar un tag a un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag asociado
+        '404':
+          description: Post o tag no encontrado
+    delete:
+      tags: [Posts]
+      summary: Quitar un tag de un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag quitado
+        '404':
+          description: Post no encontrado
+
+  /comments:
+    post:
+      tags: [Comments]
+      summary: Crear un comentario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentInput'
+      responses:
+        '201':
+          description: Comentario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          description: Datos inválidos
+        '404':
+          description: Usuario o post no encontrado
+
+  /comments/post/{postId}:
+    get:
+      tags: [Comments]
+      summary: Obtener los comentarios de un post
+      description: Devuelve los comentarios del post, excluyendo los más antiguos que la cantidad de meses configurada en el entorno.
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de comentarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '404':
+          description: Post no encontrado
+
+  /comments/{id}:
+    put:
+      tags: [Comments]
+      summary: Actualizar un comentario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  example: Comentario actualizado
+      responses:
+        '200':
+          description: Comentario actualizado
+        '404':
+          description: Comentario no encontrado
+    delete:
+      tags: [Comments]
+      summary: Eliminar un comentario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Comentario eliminado
+        '404':
+          description: Comentario no encontrado
+
+  /tags:
+    get:
+      tags: [Tags]
+      summary: Obtener todos los tags
+      responses:
+        '200':
+          description: Lista de tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+    post:
+      tags: [Tags]
+      summary: Crear un tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagInput'
+      responses:
+        '201':
+          description: Tag creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '500':
+          description: Error al crear el tag
+
+  /tags/post/{postId}:
+    get:
+      tags: [Tags]
+      summary: Obtener los tags de un post
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de tags del post
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        '404':
+          description: Post no encontrado
+
+  /tags/{id}:
+    get:
+      tags: [Tags]
+      summary: Obtener un tag por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Tag no encontrado
+    put:
+      tags: [Tags]
+      summary: Actualizar un tag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagInput'
+      responses:
+        '200':
+          description: Tag actualizado
+        '404':
+          description: Tag no encontrado
+    delete:
+      tags: [Tags]
+      summary: Eliminar un tag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag eliminado
+        '404':
+          description: Tag no encontrado

@@ -7,23 +7,21 @@ const verificarUsuarioExistente = async (req, res, next) => {
       return res.status(400).json({ error: "Falta indicar el nickName del usuario." });
     }
     const user = await User.findOne({ nickName: nickNameBuscado });
-    
+
     if (!user) {
       return res.status(404).json({ error: `El usuario '${nickNameBuscado}' no existe` });
     }
-    req.usuario = user; 
+    req.usuario = user;
     next();
   } catch (error) {
     res.status(500).json({ error: 'Error interno al verificar el usuario' });
   }
 };
 
-
-// Esta funcion lo que hace es verificar si existe el usuario que va a seguir y el usuario seguido
 const verificarUsuariosFollow = async (req, res, next) => {
   try {
-    const { seguidorNick } = req.params; 
-    const { seguir } = req.body; 
+    const { seguidorNick } = req.params;
+    const { seguir } = req.body;
 
     const [seguidor, seguido] = await Promise.all([
       User.findOne({ nickName: seguidorNick }),
@@ -42,7 +40,6 @@ const verificarUsuariosFollow = async (req, res, next) => {
   }
 };
 
-// Aca lo que hice fue verificar que el usuario o el mail no se repita a la hora de crear un usuario o al actualizar tambien en caso de mail.
 const validarRepeticiones = async (req, res, next) => {
   try {
     const { nickName, email } = req.body;
@@ -65,9 +62,21 @@ const validarRepeticiones = async (req, res, next) => {
   }
 };
 
-module.exports = { 
-  verificarUsuarioExistente, 
-  verificarUsuariosFollow, 
-  validarRepeticiones,
+// Verifica que el usuario exista buscándolo por su _id (cuando llega en el body, ej: al crear un comentario)
+const verificarUsuarioPorId = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.body.user);
+    if (!user) return res.status(404).json({ error: "El usuario no existe" });
+    req.usuario = user;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
+module.exports = {
+  verificarUsuarioExistente,
+  verificarUsuariosFollow,
+  validarRepeticiones,
+  verificarUsuarioPorId,
 };
